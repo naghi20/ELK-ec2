@@ -1,0 +1,31 @@
+# Helm values for prometheus-community/kube-prometheus-stack
+# Trimmed down for a local demo cluster (kind/minikube), not production sizing.
+grafana:
+  adminPassword: null   # leave null to auto-generate; read via kubectl secret
+  defaultDashboardsTimezone: browser
+
+prometheus:
+  prometheusSpec:
+    retention: 1d
+    resources:
+      requests:
+        cpu: 100m
+        memory: 256Mi
+      limits:
+        cpu: 500m
+        memory: 512Mi
+    # Allow Prometheus to discover ServiceMonitors in any namespace,
+    # not just ones with a specific release label -- simpler for a demo.
+    serviceMonitorSelectorNilUsesHelmValues: false
+    podMonitorSelectorNilUsesHelmValues: false
+    ruleSelectorNilUsesHelmValues: false
+
+alertmanager:
+  alertmanagerSpec:
+    resources:
+      requests:
+        cpu: 50m
+        memory: 64Mi
+      limits:
+        cpu: 100m
+        memory: 128Mi

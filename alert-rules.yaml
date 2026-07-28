@@ -1,0 +1,24 @@
+# A PrometheusRule the Operator picks up automatically.
+# Apply: kubectl apply -f alert-rules.yaml
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: sample-app-alerts
+  namespace: monitoring
+  labels:
+    release: monitoring
+spec:
+  groups:
+    - name: sample-app.rules
+      rules:
+        - alert: HighErrorRate
+          expr: |
+            sum(rate(sample_app_requests_total{status="500"}[5m]))
+            /
+            sum(rate(sample_app_requests_total[5m])) > 0.05
+          for: 5m
+          labels:
+            severity: critical
+          annotations:
+            summary: "Sample app error rate above 5% for 5 minutes"
+            description: "More than 5% of requests to sample-app have returned a 500 status over the last 5 minutes."
